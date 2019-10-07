@@ -6,20 +6,28 @@ import java.util.function.Function;
 public interface Either<E, R> {
 	
 	public static void main(String[] $){
-		match(Result.create("result").map(String::length), 
+		Result.create("result")
+		.map(String::length)
+		.match(
 			error -> println(error),
 			result -> println(result)
 		);
 		
-		match(Error.create("error").map(Object::hashCode),
+		Error.create("error")
+		.map(Object::hashCode)
+		.match(
 			error -> println(error),
 			result -> println(result)
 		);
 	}
 	
-	public static <E, R> void match(Either<E, R> either, Consumer<E> whenE, Consumer<R> whenR){
-		if(either instanceof Error) whenE.accept(((Error<E, R>) either).error);
-		else whenR.accept(((Result<E, R>) either).result);
+	default void match(Consumer<E> whenE, Consumer<R> whenR){
+		if(this instanceof Error) whenE.accept(((Error<E, R>) this).error);
+		else whenR.accept(((Result<E, R>) this).result);
+	}
+	
+	default Either<E, R> when(boolean predicate, E error){
+		return this instanceof Error ? new Error<>(error) : this;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -39,7 +47,7 @@ public interface Either<E, R> {
 		
 		public final E error;
 		
-		private Error(E error){
+		public Error(E error){
 			this.error = error;
 		}
 		
