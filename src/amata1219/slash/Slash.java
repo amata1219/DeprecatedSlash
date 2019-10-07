@@ -26,27 +26,58 @@ public class Slash extends JavaPlugin {
 	
 	public void execute(CommandSender sender, String[] args){
 		/*
+		 * 1
+		 * 
 		 * Result(next()).when(Maybe::isNothing, "err: a").flatBind(
 		 * a -> Result(next()).when(Maybe::isNothing, "err: b").flatBind(
 		 * b -> b.match(s -> b.equals(s),
 		 *         case("hi", () -> sender.sendMessage("res: hi")),
-		 *         case("bye", Result(next()).when(Maybe::isNothing, "err: c").ifJust(
+		 *         case("bye", () -> Result(next()).when(Maybe::isNothing, "err: c").ifJust(
 		 *             c -> execute(a, c)
 		 *         ))
 		 *      )
 		 * )).ifNothing(sender::sendMessage);
 		 * 
+		 * 2
+		 * 
 		 * Result(next()).whenN("err: a").flatBind(
 		 * a -> Result(next()).whenN("err: b").flatBind(
 		 * b -> b.match(s -> b.equals(s),
 		 *         case("hi", () -> sender.sendMessage("res: hi")),
-		 *         case("bye", Result(next()).whenN("err: c").ifJust(
+		 *         case("bye", () -> Result(next()).whenN("err: c").ifJust(
 		 *             c -> execute(a, c)
 		 *         )),
 		 *         else(() -> Error("err: else"))
 		 *      )
 		 * )).ifNothing(sender::sendMessage);
 		 * 
+		 * 3
+		 * 
+		 * Either(() -> "err: a", next()).flatBind(
+		 * a -> Either(() -> "err: b", next()).flatBind(
+		 * b -> match(s -> b.equals(s),
+		 *         case("hi", () -> sender.sendMessage("res: hi")),
+		 *         case("bye", () -> Either(() -> "err: c", next()).match(
+		 *             err -> sender.sendMessage(err),
+		 *             c -> execute(a, c)
+		 *         )),
+		 *         else(() -> Error("err: else"))
+		 *      )
+		 * ));
+		 * 
+		 * 4
+		 * 
+		 * next(() -> "err: a").flatBind(
+		 * a -> next(() -> "err: b").flatBind(
+		 * b -> switch(s -> b.equals(s),
+		 *         case("hi", () -> sender.setOp(true)),
+		 *         case("bye", () -> next(() -> "err: c").match(
+		 *             err -> sender.sendMessage(err),
+		 *             c -> execute(a, c)
+		 *         )),
+		 *         else(() -> Error("err: else"))
+		 *      )
+		 * ));
 		 * 
 		 * Result(next()): Result<Maybe<T>>
 		 * whenN("err: a"): err: Error<String> / Result<Maybe<T>>

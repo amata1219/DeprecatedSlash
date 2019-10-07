@@ -36,7 +36,7 @@ public interface CommandMonad<R> {
 	}
 	 */
 	
-	public static <R> Result<R> Result(T result){
+	public static <R> Result<R> Result(R result){
 		return Result(Maybe.unit(result));
 	}
 	
@@ -64,7 +64,11 @@ public interface CommandMonad<R> {
 		return flatMap(mapper.andThen(result -> new Result<T>(result)));
 	}*/
 	
-	<T> CommandMonad<T> flatMap(Function<R, CommandMonad<T>> mapper);
+	@SuppressWarnings("unchecked")
+	default <T> CommandMonad<T> flatMap(Function<R, CommandMonad<T>> mapper){
+		if(this instanceof Error) return (CommandMonad<T>) this;
+		Result<T>
+	}
 	
 	//<T> CommandMonad<T> map(Function<R, T> mapper);
 	
@@ -78,9 +82,9 @@ public interface CommandMonad<R> {
 		
 	}
 	
-	class Result<R> implements CommandMonad<R> {
+	interface Result<R> extends CommandMonad<R> {
 		
-		public final Maybe<R> result;
+		/*public final Maybe<R> result;
 		
 		public Result(Maybe<R> result){
 			this.result = result;
@@ -90,7 +94,15 @@ public interface CommandMonad<R> {
 		@Override
 		public <T> CommandMonad<T> flatMap(Function<R, CommandMonad<T>> mapper) {
 			return result instanceof Nothing ? (Result<T>) this : mapper.apply(((Just<R>) result).value);
-		}
+		}*/
+		
+	}
+	
+	class Nothing<R> implements Result<R> {
+		
+	}
+	
+	class Just<R> implements Result<R> {
 		
 	}
 	
