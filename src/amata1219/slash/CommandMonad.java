@@ -1,11 +1,9 @@
 package amata1219.slash;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
-import amata1219.slash.Maybe.Just;
-import amata1219.slash.Maybe.Nothing;
+import amata1219.slash.Result.Just;
+import amata1219.slash.Result.Nothing;
 
 public interface CommandMonad<R> {
 	
@@ -37,11 +35,7 @@ public interface CommandMonad<R> {
 	 */
 	
 	public static <R> Result<R> Result(R result){
-		return Result(Maybe.unit(result));
-	}
-	
-	public static <R> Result<R> Result(Maybe<R> result){
-		return new Result<>(result);
+		return Result.unit(result);
 	}
 	
 	public static <R> Error<R> Error(String error){
@@ -51,58 +45,35 @@ public interface CommandMonad<R> {
 	/*default CommandMonad<R> whenN(String error){
 		return this instanceof Error ? this : ((Result<R>) this).result instanceof Just ? this : Error(error);
 	}
-	
-	@SuppressWarnings("unchecked")
-	default <T> CommandMonad<T> flatMap(Function<R, CommandMonad<T>> mapper){
-		if(this instanceof Error) return (Error<T>) this;
-		Maybe<R> maybe = ((Result<R>) this).result;
-		return maybe instanceof Nothing ? (Error<T>) this : mapper.apply(((Just<R>) maybe).value);
-	}
-	
-	@SuppressWarnings("unchecked")
-	default <T> CommandMonad<T> map(Function<R, T> mapper){
-		return flatMap(mapper.andThen(result -> new Result<T>(result)));
 	}*/
 	
-	@SuppressWarnings("unchecked")
-	default <T> CommandMonad<T> flatMap(Function<R, CommandMonad<T>> mapper){
-		if(this instanceof Error) return (CommandMonad<T>) this;
-		Result<T>
+	default <T> CommandMonad<T> flatBind(Function<R, CommandMonad<T>> mapper){
+		if(this instanceof Error || this instanceof Nothing) return cast();
+		else return mapper.apply(asJust().value);
 	}
 	
-	//<T> CommandMonad<T> map(Function<R, T> mapper);
+	default <T> CommandMonad<T> bind(Function<R, T> mapper){
+		return flatBind(res -> Result(mapper.apply(asJust().value)));
+	}
+	
+	@SuppressWarnings("unchecked")
+	default <T> CommandMonad<T> cast(){
+		if(this instanceof Just) throw new IllegalStateException("Just<R> can not be cast to Just<T>");
+		else return (CommandMonad<T>) this;
+	}
+	
+	default Just<R> asJust(){
+		if(this instanceof Just) return (Just<R>) this;
+		else throw new IllegalStateException("Error and Nothing can not be cast to Just");
+	}
 	
 	class Error<R> implements CommandMonad<R> {
 		
 		public final String error;
 		
-		public Error(String error){
+		private Error(String error){
 			this.error = error;
 		}
-		
-	}
-	
-	interface Result<R> extends CommandMonad<R> {
-		
-		/*public final Maybe<R> result;
-		
-		public Result(Maybe<R> result){
-			this.result = result;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <T> CommandMonad<T> flatMap(Function<R, CommandMonad<T>> mapper) {
-			return result instanceof Nothing ? (Result<T>) this : mapper.apply(((Just<R>) result).value);
-		}*/
-		
-	}
-	
-	class Nothing<R> implements Result<R> {
-		
-	}
-	
-	class Just<R> implements Result<R> {
 		
 	}
 	
