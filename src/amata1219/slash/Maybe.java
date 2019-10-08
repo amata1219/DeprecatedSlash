@@ -2,13 +2,13 @@ package amata1219.slash;
 
 import java.util.Objects;
 
-public interface Result<R> extends CommandMonad<R> {
+public interface Maybe<R> extends CommandMonad<R> {
 
-	public static <R> Result<R> unit(R value){
+	public static <R> Maybe<R> unit(R value){
 		return value != null ? new Just<>(value) : Nothing.instance();
 	}
 
-	public static class Just<R> implements Result<R> {
+	public static class Just<R> implements Maybe<R> {
 
 		public final R value;
 
@@ -18,7 +18,7 @@ public interface Result<R> extends CommandMonad<R> {
 
 	}
 
-	public static class Nothing<R> implements Result<R> {
+	public static class Nothing<R> implements Maybe<R> {
 
 		private static final Nothing<?> INSTANCE = new Nothing<>();
 

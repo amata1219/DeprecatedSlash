@@ -13,14 +13,14 @@ public class Interval<N extends Number & Comparable<N>> {
 	}
 	
 	public static <N extends Number & Comparable<N>> Interval<N> Range(N lower, N upper){
-		return range(ClosedEnd(lower), OpenEnd(upper));
+		return Range(ClosedEnd(lower), OpenEnd(upper));
 	}
 	
 	public static <N extends Number & Comparable<N>> Interval<N> RangeClosed(N lower, N upper){
-		return range(ClosedEnd(lower), ClosedEnd(upper));
+		return Range(ClosedEnd(lower), ClosedEnd(upper));
 	}
 	
-	public static <N extends Number & Comparable<N>> Interval<N> range(EndPoint<N> lower, EndPoint<N> upper){
+	public static <N extends Number & Comparable<N>> Interval<N> Range(EndPoint<N> lower, EndPoint<N> upper){
 		if(lower.greater(upper.x) || upper.lesser(lower.x)) throw new IllegalArgumentException("Range can not be empty");
 		return new Interval<>(lower, upper);
 	}

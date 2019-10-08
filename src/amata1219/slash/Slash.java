@@ -26,23 +26,17 @@ public class Slash extends JavaPlugin {
 	
 	public void execute(CommandSender sender, String[] args){
 		/*
+		 * 
 		 * nextInt(() -> "err: a").when(Range(0, 10), () -> "err: i").flatBind(
-		 * a -> next(() -> "err: b").when().flatBind(
-		 * b -> switch(s -> b.equals(s),
-		 *         case("hi", () -> sender.setOp(true)),
-		 *         case("bye", () -> next(() -> "err: c").match(
+		 * a -> next(() -> "err: b").match(
+		 *         Case("hi", "h").expr(() -> sender.setOp(true)),
+		 *         Case("bye").expr(() -> next(() -> "err: c").match(
 		 *             err -> sender.sendMessage(err),
 		 *             c -> execute(a, c)
 		 *         )),
-		 *         else(() -> Error("err: else"))
+		 *         Else(() -> Error("err: else"))
 		 *      )
 		 * ));
-		 * 
-		 * Range(0, 10) → 0 <= i < 10
-		 * RangeClosed(0, 10) → 0 <= i < 10
-		 * 
-		 * 
-		 * when(boolean, () -> "")
 		 * 
 		 * Result(next()): Result<Maybe<T>>
 		 * whenN("err: a"): err: Error<String> / Result<Maybe<T>>
