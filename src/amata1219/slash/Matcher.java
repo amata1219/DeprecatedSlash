@@ -16,6 +16,11 @@ public abstract class Matcher<T> {
 		return new Condition<>(predicate);
 	}
 	
+	public static <T> Matcher<T> Case(Predicate<T> predicate){
+		return new Condition<>(predicate);
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	public static <T, R> LabeledStatement<T, R> Else(Supplier<Command<R>> expression){
 		return (LabeledStatement<T, R>) DEFAULT.label(expression);

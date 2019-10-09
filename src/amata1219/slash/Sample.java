@@ -5,6 +5,7 @@ import static amata1219.slash.Interval.*;
 import static amata1219.slash.Matcher.*;
 
 import java.util.Set;
+import java.util.function.Function;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -16,7 +17,7 @@ import org.bukkit.plugin.Plugin;
 public class Sample {
 	
 	public static void main(String[] $){
-		new Sample().onCommand(new DummySender(), new ArgList(new String[]{"add", "1"}));
+		new Sample().onCommand(new DummySender(), new ArgList(new String[]{"execute", "s", "t"}));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -28,12 +29,13 @@ public class Sample {
 			Case("sub", "-").label(() -> args.nextInt(() -> "err4").when(Range(Integer.MIN_VALUE, 0)::contains, () -> "err5").whenR(
 				n -> sub(sender, n)
 			)),
-			Case(String.class, s -> s.equalsIgnoreCase("execute")).label(() -> args.next(() -> "").flatBind(
+			Case(String.class, s -> s.equalsIgnoreCase("execute")).label(() -> args.next(() -> "err6").flatBind(
 				s -> args.next(() -> "err6").whenR(
 				t -> execute(s, t)
 			))),
+			//Case(Function.identity()).label(() -> null),
 			Else(() -> Error("err7"))
-		).whenE(sender::sendMessage);
+		).whenE(System.out::println);
 		
 	}
 	
