@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 public abstract class Matcher<T> {
 	
-	private Supplier<Command<T>> expression;
+	private final static Default<?> DEFAULT = new Default<>();
 	
 	@SafeVarargs
 	public static <T> Matcher<T> Case(T... literals){
@@ -16,17 +16,13 @@ public abstract class Matcher<T> {
 		return new Condition<>(predicate);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> Matcher<T> Else(Supplier<Command<T>> expression){
-		return new Default<>(expression);
+		return (Matcher<T>) DEFAULT;
 	}
 
-	public Matcher<T> expr(Supplier<Command<T>> expression){
-		this.expression = expression;
-		return this;
-	}
-	
-	public Command<T> evalExpr(){
-		return expression.get();
+	public LabeledStatement<T> label(Supplier<Command<T>> expression){
+		return new LabeledStatement<>(this, expression);
 	}
 	
 	public abstract boolean match(T value);
@@ -65,8 +61,8 @@ public abstract class Matcher<T> {
 	
 	private static class Default<T> extends Matcher<T> {
 
-		private Default(Supplier<Command<T>> expression){
-			super.expression = expression;
+		private Default(){
+			
 		}
 		
 		@Override

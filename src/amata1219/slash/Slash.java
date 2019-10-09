@@ -40,8 +40,8 @@ public class Slash extends JavaPlugin {
 		 * 
 		 * nextInt(() -> "err: a").when(Range(0, 10), () -> "err: i").flatBind(
 		 * a -> nextInt(() -> "err: b").match(
-		 *         Case(1).expr(() -> sender.setOp(true)),
-		 *         Case(Range(0, 10)::contains).expr(() -> next(() -> "err: c").match(
+		 *         Case(1).label(() -> sender.setOp(true)),
+		 *         Case(Range(0, 10)::contains).label(() -> next(() -> "err: c").match(
 		 *             err -> sender.sendMessage(err),
 		 *             c -> execute(a, c)
 		 *         )),
