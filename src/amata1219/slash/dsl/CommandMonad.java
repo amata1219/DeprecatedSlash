@@ -1,11 +1,14 @@
-package amata1219.slash;
+package amata1219.slash.dsl;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public interface Command<R> {
+import amata1219.slash.dsl.component.ErrorMessage;
+import amata1219.slash.dsl.component.LabeledStatement;
+
+public interface CommandMonad<R> {
 	
 	public static <R> Result<R> Result(R result){
 		return new Result<>(result);
@@ -20,50 +23,50 @@ public interface Command<R> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	default <T> Command<T> flatBind(Function<R, Command<T>> mapper){
-		return this instanceof Error ? (Command<T>) this : mapper.apply(((Result<R>) this).result);
+	default <T> CommandMonad<T> flatBind(Function<R, CommandMonad<T>> mapper){
+		return this instanceof Error ? (CommandMonad<T>) this : mapper.apply(((Result<R>) this).result);
 	}
 	
-	default <T> Command<T> bind(Function<R, T> mapper){
+	default <T> CommandMonad<T> bind(Function<R, T> mapper){
 		return flatBind(res -> Result(mapper.apply(((Result<R>) this).result)));
 	}
 	
-	default Command<R> whenR(Consumer<R> action){
+	default CommandMonad<R> whenR(Consumer<R> action){
 		if(this instanceof Result) action.accept(((Result<R>) this).result);
 		return this;
 	}
 	
-	default Command<R> whenE(Consumer<String> action){
+	default CommandMonad<R> whenE(Consumer<String> action){
 		if(this instanceof Error) action.accept(((Error<R>) this).error);
 		return this;
 	}
 	
-	default Command<R> when(Predicate<R> predicate, Function<R, Supplier<String>> error){
+	default CommandMonad<R> when(Predicate<R> predicate, Function<R, Supplier<String>> error){
 		if(this instanceof Error) return this;
 		R result = ((Result<R>) this).result;
 		return this instanceof Error ? this : predicate.test(result) ? Error(error.apply(result).get()) : this;
 	}
 	
-	default Command<R> when(Predicate<R> predicate, Supplier<String> error){
+	default CommandMonad<R> when(Predicate<R> predicate, Supplier<String> error){
 		return when(predicate, r -> error);
 	}
 	
-	default Command<R> otherwise(Predicate<R> predicate, Supplier<String> error){
+	default CommandMonad<R> otherwise(Predicate<R> predicate, Supplier<String> error){
 		return when(predicate.negate(), error);
 	}
 	
-	default Command<R> otherwise(Predicate<R> predicate, Function<R, Supplier<String>> error){
+	default CommandMonad<R> otherwise(Predicate<R> predicate, Function<R, Supplier<String>> error){
 		return when(predicate.negate(), error);
 	}
 	
 	@SuppressWarnings("unchecked")
-	default Command<?> match(LabeledStatement<R, ?>... statements){
+	default CommandMonad<?> match(LabeledStatement<R, ?>... statements){
 		if(this instanceof Error) return this;
 		for(LabeledStatement<R, ?> statement : statements) if(statement.matcher.match(((Result<R>) this).result)) return statement.evaluate();
 		return this;
 	}
 	
-	class Error<R> implements Command<R> {
+	class Error<R> implements CommandMonad<R> {
 		
 		public final String error;
 		
@@ -73,7 +76,7 @@ public interface Command<R> {
 		
 	}
 	
-	class Result<R> implements Command<R> {
+	class Result<R> implements CommandMonad<R> {
 		
 		public final R result;
 		

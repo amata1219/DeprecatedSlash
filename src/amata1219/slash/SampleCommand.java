@@ -1,18 +1,46 @@
 package amata1219.slash;
 
-import static amata1219.slash.Command.*;
 import static amata1219.slash.Interval.*;
-import static amata1219.slash.Matcher.*;
-import static amata1219.slash.Sample.Message.*;
-
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
+import static amata1219.slash.SampleCommand.Message.*;
+import static amata1219.slash.dsl.CommandMonad.*;
+import static amata1219.slash.dsl.component.Matcher.*;
 
 import org.bukkit.command.CommandSender;
 
-public final class Sample {
+import amata1219.slash.dsl.Command;
+import amata1219.slash.dsl.component.ErrorMessage;
+
+public class SampleCommand implements Command {
 	
-	private static final Predicate<String> UUID_MATCHER = Pattern.compile("[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}").asPredicate();
+	@SuppressWarnings("unchecked")
+	public void onCommand(CommandSender sender, ArgList args){
+		args.next(E1).match(
+			Case("add", "+").label(() -> args.nextInt(E2).otherwise(Range(0, 10)::contains, i -> E3.format(i)).whenR(
+				n -> add(sender, n)
+			)),
+			Case("sub", "-").label(() -> args.nextInt(E4).when(Range(Integer.MIN_VALUE, 0)::contains, i -> E5.format(i)).whenR(
+				n -> sub(sender, n)
+			)),
+			Case(s -> s.length() == 5, () -> args.next(E6).flatBind(
+				s -> args.next(E7).whenR(
+				t -> execute(s, t)
+			))),
+			Else(() -> Error(E8))
+		).whenE(sender::sendMessage);
+		
+	}
+	
+	public void add(CommandSender sender, int n){
+		System.out.println("add: " + n);
+	}
+	
+	public void sub(CommandSender sender, int n){
+		System.out.println("sub: " + n);
+	}
+	
+	public void execute(String s, String t){
+		System.out.println("exe: " + s + " : " + t);
+	}
 	
 	enum Message implements ErrorMessage {
 		
@@ -36,36 +64,6 @@ public final class Sample {
 			return raw;
 		}
 		
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void onCommand(CommandSender sender, ArgList args){
-		args.next(E1).match(
-			Case("add", "+").label(() -> args.nextInt(E2).otherwise(Range(0, 10)::contains, i -> E3.format(i)).whenR(
-				n -> add(sender, n)
-			)),
-			Case("sub", "-").label(() -> args.nextInt(E4).when(Range(Integer.MIN_VALUE, 0)::contains, i -> E5.format(i)).whenR(
-				n -> sub(sender, n)
-			)),
-			Case(UUID_MATCHER, () -> args.next(E6).flatBind(
-				s -> args.next(E7).whenR(
-				t -> execute(s, t)
-			))),
-			Else(() -> Error(E8))
-		).whenE(sender::sendMessage);
-		
-	}
-	
-	public void add(CommandSender sender, int n){
-		System.out.println("add: " + n);
-	}
-	
-	public void sub(CommandSender sender, int n){
-		System.out.println("sub: " + n);
-	}
-	
-	public void execute(String s, String t){
-		System.out.println("exe: " + s + " : " + t);
 	}
 	
 }

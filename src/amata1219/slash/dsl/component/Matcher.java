@@ -1,7 +1,9 @@
-package amata1219.slash;
+package amata1219.slash.dsl.component;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import amata1219.slash.dsl.CommandMonad;
 
 public abstract class Matcher<T> {
 	
@@ -12,16 +14,16 @@ public abstract class Matcher<T> {
 		return new Literal<>(literals);
 	}
 	
-	public static <T, R> LabeledStatement<T, R> Case(Predicate<T> predicate, Supplier<Command<R>> expression){
+	public static <T, R> LabeledStatement<T, R> Case(Predicate<T> predicate, Supplier<CommandMonad<R>> expression){
 		return new LabeledStatement<>(new Condition<>(predicate), expression);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T, R> LabeledStatement<T, R> Else(Supplier<Command<R>> expression){
+	public static <T, R> LabeledStatement<T, R> Else(Supplier<CommandMonad<R>> expression){
 		return (LabeledStatement<T, R>) DEFAULT.label(expression);
 	}
 
-	public <R> LabeledStatement<T, R> label(Supplier<Command<R>> expression){
+	public <R> LabeledStatement<T, R> label(Supplier<CommandMonad<R>> expression){
 		return new LabeledStatement<>(this, expression);
 	}
 	
