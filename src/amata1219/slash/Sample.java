@@ -3,24 +3,18 @@ package amata1219.slash;
 import static amata1219.slash.Command.*;
 import static amata1219.slash.Interval.*;
 import static amata1219.slash.Matcher.*;
-import static amata1219.slash.Sample.M.*;
+import static amata1219.slash.Sample.Message.*;
 
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.permissions.PermissionAttachmentInfo;
-import org.bukkit.plugin.Plugin;
 
 public final class Sample {
 	
 	private static final Predicate<String> UUID_MATCHER = Pattern.compile("[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}").asPredicate();
 	
-	protected enum M implements ErrorMessage {
+	enum Message implements ErrorMessage {
 		
 		E1("&c-第1引数を指定して下さい。"),
 		E2("&c-0以上10未満の整数値を指定して下さい。"),
@@ -33,7 +27,7 @@ public final class Sample {
 		
 		private final String raw;
 		
-		private M(String raw){
+		private Message(String raw){
 			this.raw = raw;
 		}
 
@@ -72,100 +66,6 @@ public final class Sample {
 	
 	public void execute(String s, String t){
 		System.out.println("exe: " + s + " : " + t);
-	}
-	
-	public static void main(String[] $){
-		new Sample().onCommand(new DummySender(), new ArgList(new String[]{"add", "2.5"}));
-	}
-	
-	public static class DummySender implements CommandSender {
-
-		@Override
-		public PermissionAttachment addAttachment(Plugin arg0) {
-			return null;
-		}
-
-		@Override
-		public PermissionAttachment addAttachment(Plugin arg0, int arg1) {
-			return null;
-		}
-
-		@Override
-		public PermissionAttachment addAttachment(Plugin arg0, String arg1, boolean arg2) {
-			return null;
-		}
-
-		@Override
-		public PermissionAttachment addAttachment(Plugin arg0, String arg1, boolean arg2, int arg3) {
-			return null;
-		}
-
-		@Override
-		public Set<PermissionAttachmentInfo> getEffectivePermissions() {
-			return null;
-		}
-
-		@Override
-		public boolean hasPermission(String arg0) {
-			return false;
-		}
-
-		@Override
-		public boolean hasPermission(Permission arg0) {
-			return false;
-		}
-
-		@Override
-		public boolean isPermissionSet(String arg0) {
-			return false;
-		}
-
-		@Override
-		public boolean isPermissionSet(Permission arg0) {
-			return false;
-		}
-
-		@Override
-		public void recalculatePermissions() {
-		}
-
-		@Override
-		public void removeAttachment(PermissionAttachment arg0) {
-		}
-
-		@Override
-		public boolean isOp() {
-			return false;
-		}
-
-		@Override
-		public void setOp(boolean arg0) {
-		}
-
-		@Override
-		public String getName() {
-			return null;
-		}
-
-		@Override
-		public Server getServer() {
-			return null;
-		}
-
-		@Override
-		public void sendMessage(String arg0) {
-		}
-
-		@Override
-		public void sendMessage(String[] arg0) {
-		}
-
-		@Override
-		public Spigot spigot() {
-			return null;
-		}
-		
-		
 	}
 	
 }
