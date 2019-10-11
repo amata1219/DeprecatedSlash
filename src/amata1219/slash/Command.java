@@ -3,8 +3,7 @@ package amata1219.slash;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import com.google.common.base.Supplier;
+import java.util.function.Supplier;
 
 public interface Command<R> {
 	
@@ -39,11 +38,21 @@ public interface Command<R> {
 		return this;
 	}
 	
+	default Command<R> when(Predicate<R> predicate, Function<R, Supplier<String>> error){
+		if(this instanceof Error) return this;
+		R result = ((Result<R>) this).result;
+		return this instanceof Error ? this : predicate.test(result) ? Error(error.apply(result).get()) : this;
+	}
+	
 	default Command<R> when(Predicate<R> predicate, Supplier<String> error){
-		return this instanceof Error ? this : predicate.test(((Result<R>) this).result) ? Error(error.get()) : this;
+		return when(predicate, r -> error);
 	}
 	
 	default Command<R> otherwise(Predicate<R> predicate, Supplier<String> error){
+		return when(predicate.negate(), error);
+	}
+	
+	default Command<R> otherwise(Predicate<R> predicate, Function<R, Supplier<String>> error){
 		return when(predicate.negate(), error);
 	}
 	

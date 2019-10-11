@@ -6,7 +6,6 @@ import static amata1219.slash.Matcher.*;
 import static amata1219.slash.Sample.M.*;
 
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -23,9 +22,9 @@ public final class Sample {
 	
 	protected enum M implements ErrorMessage {
 		
-		E1(""),
-		E2(""),
-		E3(""),
+		E1("&c-第1引数を指定して下さい。"),
+		E2("&c-0以上10未満の整数値を指定して下さい。"),
+		E3("&c-指定された値%sは不正です。0以上10未満の整数値を指定して下さい。"),
 		E4(""),
 		E5(""),
 		E6(""),
@@ -48,10 +47,10 @@ public final class Sample {
 	@SuppressWarnings("unchecked")
 	public void onCommand(CommandSender sender, ArgList args){
 		args.next(E1).match(
-			Case("add", "+").label(() -> args.nextInt(E2).otherwise(Range(0, 10)::contains, E3.format(0)).whenR(
+			Case("add", "+").label(() -> args.nextInt(E2).otherwise(Range(0, 10)::contains, i -> E3.format(i)).whenR(
 				n -> add(sender, n)
 			)),
-			Case("sub", "-").label(() -> args.nextInt(() -> "err4").when(Range(Integer.MIN_VALUE, 0)::contains, () -> "err5").whenR(
+			Case("sub", "-").label(() -> args.nextInt(E4).when(Range(Integer.MIN_VALUE, 0)::contains, i -> E5.format(i)).whenR(
 				n -> sub(sender, n)
 			)),
 			Case(UUID_MATCHER, () -> args.next(E6).flatBind(
@@ -59,7 +58,7 @@ public final class Sample {
 				t -> execute(s, t)
 			))),
 			Else(() -> Error(E8))
-		).whenE(System.out::println);
+		).whenE(sender::sendMessage);
 		
 	}
 	
@@ -76,7 +75,7 @@ public final class Sample {
 	}
 	
 	public static void main(String[] $){
-		new Sample().onCommand(new DummySender(), new ArgList(new String[]{UUID.randomUUID().toString(), "s", "t"}));
+		new Sample().onCommand(new DummySender(), new ArgList(new String[]{"add", "2.5"}));
 	}
 	
 	public static class DummySender implements CommandSender {
