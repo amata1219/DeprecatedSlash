@@ -3,7 +3,7 @@ package amata1219.slash.dsl.component;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import amata1219.slash.dsl.CommandMonad;
+import amata1219.slash.monad.Either;
 
 public abstract class Matcher<T> {
 	
@@ -14,17 +14,16 @@ public abstract class Matcher<T> {
 		return new Literal<>(literals);
 	}
 	
-	public static <T, R> LabeledStatement<T, R> Case(Predicate<T> predicate, Supplier<CommandMonad<R>> expression){
+	public static <T, F, S> LabeledStatement<T, F, S> Case(Predicate<T> predicate, Supplier<Either<F, S>> expression){
 		return new LabeledStatement<>(new Condition<>(predicate), expression);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T, R> LabeledStatement<T, R> Else(Supplier<CommandMonad<R>> expression){
-		return (LabeledStatement<T, R>) DEFAULT.label(expression);
+	public static <T, F, S> LabeledStatement<T, F, S> Else(Supplier<Either<F, S>> expression){
+		return (LabeledStatement<T, F, S>) DEFAULT.label(expression);
 	}
 	
-	
-	public <R> LabeledStatement<T, R> label(Supplier<CommandMonad<R>> expression){
+	public <F, S> LabeledStatement<T, F, S> label(Supplier<Either<F, S>> expression){
 		return new LabeledStatement<>(this, expression);
 	}
 	

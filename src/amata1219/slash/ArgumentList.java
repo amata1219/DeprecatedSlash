@@ -15,19 +15,19 @@ import amata1219.slash.monad.Either;
 
 public class ArgumentList {
 
-	private final Queue<String> remainings;
+	private final Queue<String> args;
 
 	public ArgumentList(String[] args){
-		remainings = new LinkedList<>(Arrays.asList(args));
+		this.args = new LinkedList<>(Arrays.asList(args));
 	}
 
-	public int size(){
-		return remainings.size();
+	public int length(){
+		return args.size();
 	}
 	
 	public <R> Either<String, R> next(Function<String, R> converter, Supplier<String> error){
 		try{
-			return Either.Success(converter.apply(remainings.poll()));
+			return Either.Success(converter.apply(args.poll()));
 		}catch(Exception e){
 			return Either.Failure(error.get());
 		}
@@ -71,7 +71,7 @@ public class ArgumentList {
 
 	public <T> Either<String, T> range(int count, Function<Collection<String>, Either<String, T>> action){
 		Collection<String> ranged = IntStream.range(0, count)
-				.mapToObj(i -> remainings.poll())
+				.mapToObj(i -> args.poll())
 				.collect(Collectors.toList());
 		return action.apply(ranged);
 	}
@@ -81,7 +81,7 @@ public class ArgumentList {
 	}
 	
 	public ArgumentList skip(int count){
-		for(int i = Math.min(count, size()); i > 0; i--) remainings.remove();
+		for(int i = Math.min(count, length()); i > 0; i--) args.remove();
 		return this;
 	}
 

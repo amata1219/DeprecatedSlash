@@ -2,19 +2,19 @@ package amata1219.slash.dsl.component;
 
 import java.util.function.Supplier;
 
-import amata1219.slash.dsl.CommandMonad;
+import amata1219.slash.monad.Either;
 
-public class LabeledStatement<T, R> {
+public class LabeledStatement<T, F, S> {
 	
 	public final Matcher<T> matcher;
-	private final Supplier<CommandMonad<R>> expression;
+	private final Supplier<Either<F, S>> expression;
 	
-	public LabeledStatement(Matcher<T> matcher, Supplier<CommandMonad<R>> expression){
+	public LabeledStatement(Matcher<T> matcher, Supplier<Either<F, S>> expression){
 		this.matcher = matcher;
 		this.expression = expression;
 	}
 	
-	public CommandMonad<R> evaluate(){
+	public Either<F, S> evaluate(){
 		return expression.get();
 	}
 

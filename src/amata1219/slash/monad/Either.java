@@ -2,6 +2,10 @@ package amata1219.slash.monad;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
+import amata1219.slash.dsl.component.LabeledStatement;
 
 public interface Either<F, S> {
 	
@@ -24,6 +28,14 @@ public interface Either<F, S> {
 		return (Either<F, T>) flatMap(mapper.andThen(Either::Success));
 	}
 	
+	Either<F, S> filter(Predicate<S> predicate, Supplier<F> error);
+	
+	default Either<F, S> filterNot(Predicate<S> predicate, Supplier<F> error){
+		return filter(predicate.negate(), error);
+	}
+	
+	Either<F, ?> match(@SuppressWarnings("unchecked") LabeledStatement<S, F, ?>... statements);
+	
 	Either<F, S> onSuccess(Consumer<S> action);
 	
 	Either<F, S> onFailure(Consumer<F> action);
@@ -40,6 +52,18 @@ public interface Either<F, S> {
 		public <T> Either<F, T> flatMap(Function<S, Either<F, T>> mapper) {
 			return mapper.apply(value);
 		}
+		
+		@Override
+		public Either<F, S> filter(Predicate<S> predicate, Supplier<F> error) {
+			return predicate.test(value) ? this : Failure(error.get());
+		}
+
+		@Override
+		public Either<F, ?> match(@SuppressWarnings("unchecked") LabeledStatement<S, F, ?>... statements) {
+			for(LabeledStatement<S, F, ?> statement : statements) if(statement.matcher.match(value))
+				return statement.evaluate();
+			return this;
+		}
 
 		@Override
 		public Either<F, S> onSuccess(Consumer<S> action) {
@@ -51,7 +75,7 @@ public interface Either<F, S> {
 		public Either<F, S> onFailure(Consumer<F> action) {
 			return this;
 		}
-		
+
 	}
 	
 	public class Failure<F, S> implements Either<F, S> {
@@ -67,6 +91,16 @@ public interface Either<F, S> {
 		public <T> Either<F, T> flatMap(Function<S, Either<F, T>> mapper) {
 			return (Either<F, T>) this;
 		}
+		
+		@Override
+		public Either<F, S> filter(Predicate<S> predicate, Supplier<F> error) {
+			return this;
+		}
+
+		@Override
+		public Either<F, ?> match(@SuppressWarnings("unchecked") LabeledStatement<S, F, ?>... statements) {
+			return this;
+		}
 
 		@Override
 		public Either<F, S> onSuccess(Consumer<S> action) {
@@ -78,7 +112,7 @@ public interface Either<F, S> {
 			action.accept(error);
 			return this;
 		}
-		
+
 	}
 
 }
