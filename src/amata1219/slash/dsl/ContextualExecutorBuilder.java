@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import amata1219.slash.dsl.Either.Success;
 
@@ -65,6 +67,41 @@ public class ContextualExecutorBuilder<S extends CommandSender> {
 				context -> contextualExecution.apply(context).apply(context.sender)
 			));
 		};
+	}
+	
+	public ContextualExecutorBuilder<S> execution(Function<ParsedArgumentCommandContext<S>, TargetedEffect<S>> execution){
+		return new ContextualExecutorBuilder<>(senderTypeValidation, argumentsParser, execution);
+	}
+	
+	public <T extends S> ContextualExecutorBuilder<T> refineSenderWithError(String... errors){
+		String error = Arrays.stream(errors).collect(Collectors.joining("\n"));
+		MessageEffect effect = () -> error;
+		return refineSender(effect);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends S> ContextualExecutorBuilder<T> refineSender(MessageEffect error){
+		Function<CommandSender, Maybe<S>> newSenderTypeValidation = sender -> {
+			return senderTypeValidation.apply(sender).flatMap(
+				refined -> {
+					try{
+						return Maybe.Some((T) refined);
+					}catch(Exception e){
+						error.sendTo(sender);
+						return Maybe.None();
+					}
+				}
+			);
+		};
+		return (ContextualExecutorBuilder<T>) new ContextualExecutorBuilder<S>(
+			newSenderTypeValidation,
+			(BiFunction<S, RawCommandContext, Maybe<PartiallyParsedArguments>>) argumentsParser,
+			(Function<ParsedArgumentCommandContext<S>, TargetedEffect<S>>) contextualExecution
+		);
+	}
+	
+	public ContextualExecutorBuilder<Player> playerCommandBuilder(){
+		return null;
 	}
 	
 }
