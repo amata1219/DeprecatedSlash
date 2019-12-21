@@ -5,11 +5,11 @@ import java.util.function.Function;
 
 public interface Either<F, S> {
 	
-	public static <S> Either<Message, S> Success(S value){
+	public static <S> Either<MessageEffect, S> Success(S value){
 		return new Success<>(value);
 	}
 	
-	public static <S> Either<Message, S> Failure(Message error){
+	public static <S> Either<MessageEffect, S> Failure(MessageEffect error){
 		return new Failure<>(error);
 	}
 	

@@ -10,27 +10,27 @@ public interface Parser<T>{
 		return x -> Success(x);
 	}
 	
-	static Parser<Boolean> bool(Message error){
+	static Parser<Boolean> bool(MessageEffect error){
 		return convert(error, Boolean::valueOf);
 	}
 	
-	static Parser<Integer> i32(Message error){
+	static Parser<Integer> i32(MessageEffect error){
 		return convert(error, Integer::valueOf);
 	}
 	
-	static Parser<Long> i64(Message error){
+	static Parser<Long> i64(MessageEffect error){
 		return convert(error, Long::valueOf);
 	}
 	
-	static Parser<Float> f32(Message error){
+	static Parser<Float> f32(MessageEffect error){
 		return convert(error, Float::valueOf);
 	}
 	
-	static Parser<Double> f64(Message error){
+	static Parser<Double> f64(MessageEffect error){
 		return convert(error, Double::valueOf);
 	}
 	
-	static <T> Parser<T> convert(Message error, Function<String, T> converter){
+	static <T> Parser<T> convert(MessageEffect error, Function<String, T> converter){
 		return x -> {
 			try{
 				return Success(converter.apply(x));
@@ -40,6 +40,6 @@ public interface Parser<T>{
 		};
 	}
 	
-	Either<Message, T> parse(String arg);
+	Either<MessageEffect, T> parse(String arg);
 
 }
