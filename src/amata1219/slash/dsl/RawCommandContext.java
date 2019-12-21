@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 
 public class RawCommandContext {
 	
+	
 	public final CommandSender sender;
 	public final ExecutedCommand command;
 	public final List<String> arguments;

@@ -19,6 +19,10 @@ public class BranchedExecutor {
 		this.whenBranchNotFound = whenBranchNotFound;
 	}
 	
+	public BranchedExecutor(Map<String, ContextualExecutor> branches){
+		this(branches, Maybe.Some(PrintUsageExecutor.executor), Maybe.Some(PrintUsageExecutor.executor));
+	}
+	
 	public void executeWith(RawCommandContext rawContext){
 		List<String> args= rawContext.arguments;
 		if(args.isEmpty()) {
