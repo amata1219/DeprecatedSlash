@@ -8,12 +8,12 @@ public class RawCommandContext {
 	
 	public final CommandSender sender;
 	public final ExecutedCommand command;
-	public final List<String> args;
+	public final List<String> arguments;
 	
-	public RawCommandContext(CommandSender sender, ExecutedCommand command, List<String> args){
+	public RawCommandContext(CommandSender sender, ExecutedCommand command, List<String> arguments){
 		this.sender = sender;
 		this.command = command;
-		this.args = args;
+		this.arguments = arguments;
 	}
 
 }
