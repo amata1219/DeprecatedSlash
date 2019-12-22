@@ -12,5 +12,10 @@ public class PartiallyParsedArguments {
 		this.parsed = parsed;
 		this.unparsed = unparsed;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T parsed(int index){
+		return (T) parsed.get(index);
+	}
 
 }
