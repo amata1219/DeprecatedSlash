@@ -1,8 +1,11 @@
-package amata1219.slash.dsl;
+package amata1219.slash.builder;
 
-import static amata1219.slash.dsl.Either.*;
+import static amata1219.slash.monad.Either.*;
 
 import java.util.function.Function;
+
+import amata1219.slash.effect.MessageEffect;
+import amata1219.slash.monad.Either;
 
 public interface Parser<T>{
 	

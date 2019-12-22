@@ -1,4 +1,4 @@
-package amata1219.slash.dsl;
+package amata1219.slash.builder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,8 +12,16 @@ import java.util.stream.Collectors;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import amata1219.slash.dsl.Either.Failure;
-import amata1219.slash.dsl.Either.Success;
+import amata1219.slash.ContextualExecutor;
+import amata1219.slash.contexts.ParsedArgumentCommandContext;
+import amata1219.slash.contexts.PartiallyParsedArguments;
+import amata1219.slash.contexts.RawCommandContext;
+import amata1219.slash.effect.MessageEffect;
+import amata1219.slash.effect.TargetedEffect;
+import amata1219.slash.monad.Either;
+import amata1219.slash.monad.Maybe;
+import amata1219.slash.monad.Either.Failure;
+import amata1219.slash.monad.Either.Success;
 
 public class ContextualExecutorBuilder<S extends CommandSender> {
 	
