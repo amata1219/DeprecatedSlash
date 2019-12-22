@@ -8,6 +8,10 @@ import amata1219.slash.effect.TargetedEffect;
 
 public class EchoExecutor implements ContextualExecutor {
 	
+	public static EchoExecutor of(TargetedEffect<CommandSender> effect){
+		return new EchoExecutor(effect);
+	}
+	
 	private final TargetedEffect<CommandSender> effect;
 	
 	public EchoExecutor(TargetedEffect<CommandSender> effect){
