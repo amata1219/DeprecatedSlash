@@ -25,6 +25,22 @@ public interface Parser<T>{
 		return convert(error, Long::valueOf);
 	}
 	
+	static Parser<Integer> u32(MessageEffect error){
+		return convert(error, x -> {
+			int i = Integer.parseInt(x);
+			if(i < 0) throw new IllegalArgumentException();
+			return i;
+		});
+	}
+	
+	static Parser<Long> u64(MessageEffect error){
+		return convert(error, x -> {
+			long i = Long.parseLong(x);
+			if(i < 0) throw new IllegalArgumentException();
+			return i;
+		});
+	}
+	
 	static Parser<Float> f32(MessageEffect error){
 		return convert(error, Float::valueOf);
 	}

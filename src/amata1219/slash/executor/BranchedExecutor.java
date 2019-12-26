@@ -9,7 +9,7 @@ import amata1219.slash.contexts.RawCommandContext;
 import amata1219.slash.monad.Maybe;
 import amata1219.slash.util.Tuple;
 
-public class BranchedExecutor {
+public class BranchedExecutor implements ContextualExecutor {
 	
 	private static final Maybe<ContextualExecutor> executor = Maybe.Some(PrintUsageExecutor.executor);
 	
@@ -47,6 +47,7 @@ public class BranchedExecutor {
 		this(branches, executor, executor);
 	}
 	
+	@Override
 	public void executeWith(RawCommandContext rawContext){
 		List<String> args = rawContext.arguments;
 		if(args.isEmpty()) {
