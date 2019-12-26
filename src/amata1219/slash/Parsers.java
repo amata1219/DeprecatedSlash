@@ -6,14 +6,9 @@ import java.util.function.Function;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-
-import amata1219.slash.Interval.End;
+import org.bukkit.World;
 
 public class Parsers {
-	
-	public static void main(){
-		limited(i32, Interval.of(End.open(1), End.closed(100)), "&c-数値は1以上100以下にして下さい。");
-	}
 
 	public static final Parser<String> identity = x -> success(x);
 	
@@ -24,8 +19,10 @@ public class Parsers {
 	public static final Parser<Long> i64 = define(Long::valueOf, "&c-数値は半角数字で入力して下さい。");
 	
 	@SuppressWarnings("deprecation")
-	public static final Parser<OfflinePlayer> player = define(Bukkit::getOfflinePlayer, "&c-プレイヤー名を入力して下さい。")
+	public static final Parser<OfflinePlayer> player = define(Bukkit::getOfflinePlayer, "&c-指定されたプレイヤーは存在しません。")
 			.then(OfflinePlayer::hasPlayedBefore, "&c-指定されたプレイヤーは存在しません。");
+	
+	public static final Parser<World> world = define(Bukkit::getWorld, "&c-指定されたワールドは存在しません。");
 	
 	public static final <N extends Number & Comparable<N>> Parser<N> limited(Parser<N> parser, Interval<N> interval, CharSequence error){
 		return parser.then(interval::contains, error);
@@ -34,7 +31,8 @@ public class Parsers {
 	private static <T> Parser<T> define(Function<String, T> converter, CharSequence error){
 		return x -> {
 			try{
-				return success(converter.apply(x));
+				T res = converter.apply(x);
+				return res != null ? success(res) : failure(error);
 			}catch(Exception e){
 				return failure(error);
 			}
