@@ -1,18 +1,18 @@
 package amata1219.slash;
 
-import java.util.List;
+import java.util.Queue;
 
 public class ParsedArguments {
 	
-	public final List<Object> arguments;
+	private final Queue<Object> arguments;
 	
-	public ParsedArguments(List<Object> arguments){
+	public ParsedArguments(Queue<Object> arguments){
 		this.arguments = arguments;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T get(int index){
-		return (T) arguments.get(index);
+	public <T> T next(){
+		return (T) arguments.poll();
 	}
 
 }

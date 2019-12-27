@@ -14,15 +14,37 @@ import com.google.common.collect.Lists;
 
 import amata1219.slash.monad.Either;
 import static amata1219.slash.monad.Either.*;
+
+import amata1219.slash.parser.Interval;
+import amata1219.slash.parser.Interval.End;
 import amata1219.slash.parser.Parser;
+import amata1219.slash.parser.Parsers;
 
 public class PartialExecutorBuilder<S extends CommandSender> {
 	
-	public static PartialExecutorBuilder<CommandSender> commandBuilder(){
+	static{
+		builderForPlayer()
+		.parsers(
+			Text.of("&c-/teleport [player] [world] [x] [y] [z]"),
+			Parsers.onlinePlayer,
+			Parsers.world,
+			Parsers.i32,
+			Parsers.limited(Parsers.i32, Interval.of(End.closed(0), End.open(256)), Text.of("&c-Y座標は0～255の整数値で入力して下さい。")),
+			Parsers.i32
+		)
+		.execution((sender, parsed, unparsed) -> {
+			Player player = parsed.next();
+			World world = parsed.next();
+			int x = parsed.
+			return Text.of("&c-success");
+		});
+	}
+	
+	public static PartialExecutorBuilder<CommandSender> builder(){
 		return new PartialExecutorBuilder<>().castSender(null);
 	}
 	
-	public static PartialExecutorBuilder<Player> playerCommandBuilder(){
+	public static PartialExecutorBuilder<Player> builderForPlayer(){
 		return new PartialExecutorBuilder<Player>().castSender(Text.of("&c-このコマンドはゲーム内で実行して下さい。"));
 	}
 	
@@ -84,7 +106,7 @@ public class PartialExecutorBuilder<S extends CommandSender> {
 	public PartialExecutor<S> build(){
 		return (sender, arguments) -> senderCaster.apply(sender).flatMap(
 				castedSender -> parser.apply(castedSender, arguments).flatMap(
-				partiallyParsedArguments -> failure(execution.apply(castedSender, new ParsedArguments(partiallyParsedArguments.parsed), partiallyParsedArguments.unparsed))
+				partiallyParsedArguments -> failure(execution.apply(castedSender, new ParsedArguments(Lists.newLinkedList(partiallyParsedArguments.parsed)), partiallyParsedArguments.unparsed))
 				.onFailure(message -> messenger.accept(castedSender, message))
 			));
 	}
