@@ -1,5 +1,6 @@
 package amata1219.slash;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
@@ -7,28 +8,50 @@ import java.util.function.Function;
 
 import org.bukkit.command.CommandSender;
 
+import com.google.common.collect.Lists;
+
 import amata1219.slash.monad.Either;
 import static amata1219.slash.monad.Either.*;
 import amata1219.slash.parser.Parser;
 
 public class PartialExecutorBuilder<S extends CommandSender> {
 	
-	public final Function<CommandSender, Either<CharSequence, S>> senderSafeCaster;
-	public final BiFunction<S, List<String>, Either<CharSequence, PartiallyParsedArguments>> parser;
+	private Function<CommandSender, Either<CharSequence, S>> senderCaster;
+	private BiFunction<S, List<String>, Either<CharSequence, PartiallyParsedArguments>> parser;
 	public final TriFunction<S, ParsedArguments, Queue<String>, CharSequence> partialExecution;
 	
 	public PartialExecutorBuilder(
-		Function<CommandSender, Either<CharSequence, S>> senderSafeCaster,
+		Function<CommandSender, Either<CharSequence, S>> senderCaster,
 		BiFunction<S, List<String>, Either<CharSequence, PartiallyParsedArguments>> parser,
 		TriFunction<S, ParsedArguments, Queue<String>, CharSequence> partialExecution
 	){
-		this.senderSafeCaster = senderSafeCaster;
+		this.senderCaster = senderCaster;
 		this.parser = parser;
 		this.partialExecution = partialExecution;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public PartialExecutorBuilder<S> castSender(CharSequence error){
+		Function<CommandSender, Either<CharSequence, S>> senderCaster = sender -> {
+			try{
+				return success((S) sender);
+			}catch(Exception e){
+				return failure(error);
+			}
+		};
+		this.senderCaster = senderCaster;
+		return this;
+	}
+	
 	public PartialExecutorBuilder<S> parsers(CharSequence onMissingArguments, Parser<?>... parsers){
-		
+		BiFunction<S, List<String>, Either<CharSequence, PartiallyParsedArguments>> combinedParser = (sender, arguments) -> parse(
+			Lists.newLinkedList(Arrays.asList(parsers)),
+			Lists.newLinkedList(arguments),
+			Lists.newArrayList(),
+			onMissingArguments
+		);
+		this.parser = combinedParser;
+		return this;
 	}
 	
 	private Either<CharSequence, PartiallyParsedArguments> parse(
