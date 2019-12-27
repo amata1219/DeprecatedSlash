@@ -1,4 +1,4 @@
-package amata1219.slash;
+package amata1219.slash.builder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +12,11 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
+import amata1219.slash.dsl.ParsedArguments;
+import amata1219.slash.dsl.PartialExecutor;
+import amata1219.slash.dsl.PartiallyParsedArguments;
+import amata1219.slash.dsl.Text;
+import amata1219.slash.dsl.TriFunction;
 import amata1219.slash.monad.Either;
 import static amata1219.slash.monad.Either.*;
 

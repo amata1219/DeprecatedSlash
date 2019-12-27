@@ -1,4 +1,4 @@
-package amata1219.slash;
+package amata1219.slash.dsl;
 
 public class Text implements CharSequence {
 	

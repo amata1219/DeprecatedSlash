@@ -1,9 +1,11 @@
-package amata1219.slash;
+package amata1219.slash.builder;
 
 import java.util.HashMap;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import amata1219.slash.dsl.PartialExecutor;
 
 public class BranchedExecutorBuilder<S extends CommandSender> {
 	

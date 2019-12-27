@@ -1,4 +1,4 @@
-package amata1219.slash;
+package amata1219.slash.dsl;
 
 import java.util.Arrays;
 import java.util.Queue;
