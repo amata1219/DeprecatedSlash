@@ -3,10 +3,15 @@ package amata1219.slash;
 import java.util.HashMap;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class BranchedExecutorBuilder<S extends CommandSender> {
 	
 	public static <S extends CommandSender> BranchedExecutorBuilder<S> builder(){
+		return new BranchedExecutorBuilder<>();
+	}
+	
+	public static BranchedExecutorBuilder<Player> playerCommandBuilder(){
 		return new BranchedExecutorBuilder<>();
 	}
 	
