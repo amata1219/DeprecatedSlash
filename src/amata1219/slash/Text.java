@@ -8,7 +8,7 @@ public class Text implements CharSequence {
 		return new Text(colored(text));
 	}
 	
-	public static String colored(String text){
+	private static String colored(String text){
 		char[] chars = text.toCharArray();
 
 		for(int i = 0; i < chars.length - 1; i++){

@@ -8,6 +8,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.google.common.collect.Lists;
 
@@ -17,9 +18,17 @@ import amata1219.slash.parser.Parser;
 
 public class PartialExecutorBuilder<S extends CommandSender> {
 	
+	public static PartialExecutorBuilder<CommandSender> commandBuilder(){
+		return new PartialExecutorBuilder<>().castSender(null);
+	}
+	
+	public static PartialExecutorBuilder<Player> playerCommandBuilder(){
+		return new PartialExecutorBuilder<Player>().castSender(Text.of("&c-このコマンドはゲーム内で実行して下さい。"));
+	}
+	
 	private BiConsumer<S, CharSequence> messenger = (sender, message) -> sender.sendMessage(message.toString());
 	private Function<CommandSender, Either<CharSequence, S>> senderCaster;
-	private BiFunction<S, List<String>, Either<CharSequence, PartiallyParsedArguments>> parser;
+	private BiFunction<S, List<String>, Either<CharSequence, PartiallyParsedArguments>> parser = (x, y) -> success(new PartiallyParsedArguments(Lists.newArrayList(), Lists.newLinkedList()));
 	private TriFunction<S, ParsedArguments, Queue<String>, CharSequence> execution;
 	
 	public PartialExecutorBuilder<S> messenger(BiConsumer<S, CharSequence> messenger){
