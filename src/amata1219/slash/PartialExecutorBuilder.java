@@ -3,6 +3,7 @@ package amata1219.slash;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -16,9 +17,15 @@ import amata1219.slash.parser.Parser;
 
 public class PartialExecutorBuilder<S extends CommandSender> {
 	
+	private BiConsumer<S, CharSequence> messenger = (sender, message) -> sender.sendMessage(message.toString());
 	private Function<CommandSender, Either<CharSequence, S>> senderCaster;
 	private BiFunction<S, List<String>, Either<CharSequence, PartiallyParsedArguments>> parser;
 	private TriFunction<S, ParsedArguments, Queue<String>, CharSequence> execution;
+	
+	public PartialExecutorBuilder<S> messenger(BiConsumer<S, CharSequence> messenger){
+		this.messenger = messenger;
+		return this;
+	}
 	
 	@SuppressWarnings("unchecked")
 	public PartialExecutorBuilder<S> castSender(CharSequence error){
@@ -66,7 +73,11 @@ public class PartialExecutorBuilder<S extends CommandSender> {
 	}
 	
 	public PartialExecutor<S> build(){
-		return null;
+		return (sender, arguments) -> senderCaster.apply(sender).flatMap(
+				castedSender -> parser.apply(castedSender, arguments).flatMap(
+				partiallyParsedArguments -> failure(execution.apply(castedSender, new ParsedArguments(partiallyParsedArguments.parsed), partiallyParsedArguments.unparsed))
+				.onFailure(message -> messenger.accept(castedSender, message))
+			));
 	}
 	
 }
